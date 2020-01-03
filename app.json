@@ -1,0 +1,48 @@
+{
+  "name": "ah-commando-backend",
+  "description": "Review apps for new PRs to the repo",
+  "scripts": {},
+  "env": {
+    "DATABASE_URL": "postgres://unfmehko:931GEzpHkZL-5HGjnjmxRhMXI5KwNVea@raja.db.elephantsql.com:5432/unfmehko",
+    "SECRET_KEY": {
+      "required": true
+    },
+    "CLOUD_NAME": {
+      "required": true
+    },
+    "CLOUD_API_KEY": {
+      "required": true
+    },
+    "CLOUD_API_SECRET": {
+      "required": true
+    },
+    "GOOGLE_CLIENT": {
+      "required": true
+    },
+    "GOOGLE_SECRET": {
+      "required": true
+    },
+    "GOOGLE_CALLBACK_URL": {
+      "required": true
+    },
+    "FACEBOOK_CLIENT": {
+      "required": true
+    },
+    "FACEBOOK_SECRET": {
+      "required": true
+    },
+    "FACEBOOK_CALLBACK_URL": {
+      "required": true
+    },
+    "SENDGRID_API_KEY": {
+      "required": true
+    },
+    "SERVER_MAIL": {
+      "required": true
+    }
+  },
+  "formation": {},
+  "addons": [],
+  "buildpacks": [],
+  "stack": "heroku-18"
+}

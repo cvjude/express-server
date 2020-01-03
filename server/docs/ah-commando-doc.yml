@@ -1,0 +1,1963 @@
+openapi: 3.0.1
+
+info:
+  title: Author's Haven Commando API
+  description: |
+    Author's Haven is a community for like minded authors to foster inspiration and innovation by leveraging the modern web.
+  contact:
+    email: team-commando@author-haven.com
+  version: 1.0.0
+externalDocs:
+  description: The GitHub Repository
+  url: 'https://github.com/andela/ah-commando-backend'
+servers:
+  - url: '/api/v1'
+  - url: 'https://a-haven-staging.herokuapp.com/api/v1'
+tags:
+  - name: Welcome
+    description: The root endpoint
+  - name: Users
+    description: Operations related to Users authentication
+  - name: Profiles
+    description: Operations related to User's profile
+  - name: Articles
+    description: Operations about the Articles
+  - name: god
+    description: god base role
+
+paths:
+  /:
+    get:
+      tags:
+        - Welcome
+      summary: The root endpoint
+      description: The root endpoint
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/successResponse"
+        '404':
+          description: Endpoint not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponse"
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponse"
+
+  /users:
+    post:
+      tags:
+        - Users
+      summary: To signup new users
+      description: This endpoint signs up a new user using their email
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                user:
+                  type: object
+                  properties:
+                    firstname:
+                      type: string
+                    lastname:
+                      type: string
+                    username:
+                      type: string
+                    email:
+                      type: string
+                    password:
+                      type: string
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/user"
+        '409':
+          description: User already exists
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponse"
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponse"
+
+  /users/login:
+    post:
+      tags:
+        - Users
+      summary: User login
+      description: An endpoint to log in a user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                user:
+                  type: object
+                  properties:
+                    email:
+                      type: string
+                    password:
+                      type: string
+      responses:
+        '200':
+          description: Login Successful
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/user"
+        '401':
+          description: Invalid login details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponse"
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponse"
+
+  /users/google:
+    get:
+      tags:
+        - Users
+      summary: User login
+      description: An endpoint to login a user via social media accounts
+      responses:
+        '200':
+          description: user
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/user"
+        '404':
+          description: Account not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponse"
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponse"
+
+  /users/facebook:
+    get:
+      tags:
+        - Users
+      summary: User login
+      description: An endpoint to login a user via social media accounts
+      responses:
+        '200':
+          description: user
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/user"
+        '404':
+          description: Account not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponse"
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponse"
+
+  /users/logout:
+    post:
+      tags:
+        - Users
+      summary: User logs out
+      description: An endpoint to log out a user
+      responses:
+        '204':
+          description: Logout successful
+        '401':
+          description: Invalid login details
+
+  /user:
+    get:
+      tags:
+        - Profiles
+      security:
+        - bearerAuth: []
+      summary: Get an Authorised User's profile
+      description: The endpoint to get authorised user's profile
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/profile"
+        '401':
+          description: Authorization error
+
+    put:
+      tags:
+        - Profiles
+      security:
+        - bearerAuth: []
+      summary: Edit User's profile
+      description: The endpoint to edit user's profile
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                user:
+                  type: object
+                  properties:
+                    bio:
+                      type: string
+                    email:
+                      type: string
+                    image:
+                      type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/profile"
+        '401':
+          description: Authorization error
+
+  /users/passwordReset:
+    post:
+      tags:
+        - Users
+      summary: Send password reset link to users
+      description: An endpoint to send password reset link to users
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                user:
+                  type: object
+                  properties:
+                    email:
+                      type: string
+      responses:
+        '200':
+          description: Password Link sent
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/password"
+        '404':
+          description: No user found with email supplied
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponse"
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponse"
+
+  /users/resetPassword/{id}/{token}:
+    put:
+      tags:
+        - Users
+      summary: Send password reset link to users
+      description: An endpoint to send password reset link to users
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+          description: user id in database
+        - in: path
+          name: token
+          schema:
+            type: string
+          required: true
+          description: user token autogenerated
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                user:
+                  type: object
+                  properties:
+                    password:
+                      type: string
+      responses:
+        '200':
+          description: Password Reset Successfull
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/password"
+        '401':
+          description: No user found, or invalid reset token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponse"
+        '500':
+          description: Server error
+
+  /users/confirmEmail:
+    get:
+      tags:
+        - Users
+      summary: Registered email verification
+      description: Enables a user to be able verify their email after successful registeration
+      parameters:
+        - in: query
+          name: token
+          schema:
+              type: string
+          required: true
+        - in: query
+          name: id
+          schema:
+              type: number
+          required: true
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/successResponse"
+        400:
+          description: Bad request due to Invalid verification link
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponse"
+
+    put:
+      tags:
+        - Profiles
+      security:
+        - bearerAuth: []
+      summary: User's profile
+      description: The endpoint to edit user's profile
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                bio:
+                  type: string
+                email:
+                  type: string
+                image:
+                  type: string
+                  format: binary
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/profile"
+        '401':
+          description: Authorization error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponse"
+
+    /user/readStat:
+    get:
+      tags:
+        - Profiles
+      security:
+        - bearerAuth: []
+      summary: Get read statistics
+      description: Get the statistics of articles an author has read
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/successResponse"
+        '400':
+          description: Bad request due to Invalid verification link
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponse"
+        '401':
+          description: Authorization error
+
+  /articles:
+    post:
+      tags:
+        - Articles
+      security:
+        - bearerAuth: []
+      summary: Article created
+      description: Authorized User can create article
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                article:
+                  type: object
+                  properties:
+                    title:
+                      type: string
+                    description:
+                      type: string
+                    articleBody:
+                      type: string
+                    tagList:
+                      type: string
+                    image:
+                      type: string
+      responses:
+        '201':
+          description: Create an Article
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/user"
+        '400':
+          description: Supplied Wrong or Incomplete inputs
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponse"
+        '401':
+          description: Unauthorized user
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponse"
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponse"
+
+    get:
+      tags:
+        - Articles
+      summary: get all articles. Limit to searchQuery if it is supplied
+      parameters:
+        - in: query
+          name: page
+          schema:
+            type: integer
+          description: The page number
+        - in: query
+          name: limit
+          schema:
+            type: integer
+        - in: query
+          name: searchQuery
+          schema:
+            type: string
+          description: The number of articles to return
+      description: user can get all articles
+      responses:
+        '200':
+          description: successfully view all articles
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/article"
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponse"
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponse"
+  /articles/search/filter:
+    post:
+      tags:
+        - Articles
+      summary: get all articles marching the search query and filters supplied
+      description: users can get a single article
+      parameters:
+        - in: query
+          name: searchQuery
+          schema:
+            type: string
+          required: true
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                categories:
+                  type: string
+                authorNqmes:
+                  type: string
+                tags:
+                  type: string
+      responses:
+        '200':
+          description: successfully viewed an articles
+        '400':
+          description: validationError
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponse"
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponse"
+
+  /articles/{slug}:
+    get:
+      tags:
+        - Articles
+      summary: get a single article
+      description: users can get a single article
+      parameters:
+        - in: path
+          name: slug
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: successfully viewed an articles
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponse"
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponse"
+
+  /articles/{slug}/edit:
+    put:
+      tags:
+        - Articles
+      security:
+        - bearerAuth: []
+      summary: Only edit articles created by me
+      description: Only Owner of an Article can edit that article
+      parameters:
+        - in: path
+          name: slug
+          schema:
+            type: string
+          required: true
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                article:
+                  type: object
+                  properties:
+                    title:
+                      type: string
+                    description:
+                      type: string
+                    articleBody:
+                      type: string
+                    tagList:
+                      type: string
+                    image:
+                      type: string
+      responses:
+        '200':
+          description: successfully edit an articles
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponse"
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponse"
+
+  /articles/{slug}/:
+    delete:
+      tags:
+        - Articles
+      security:
+        - bearerAuth: []
+      summary: Only delete articles created by me
+      description: Only Owner of an Article can delete that article
+      parameters:
+        - in: path
+          name: slug
+          schema:
+            type: string
+          required: true
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                article:
+                  type: object
+                  properties:
+                    id:
+                      type: number
+                    comment:
+                      type: string
+      responses:
+        '200':
+          description: successfully delete an article
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponse"
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponse"
+
+  /articles/{slug}/highlight:
+    post:
+      tags:
+        - Articles
+      security:
+        - bearerAuth: []
+      summary: Allows a user higlight a text and add a comment to that text
+      description: Only logged in users can do this
+      parameters:
+        - in: path
+          name: slug
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: successfully delete an article
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponse"
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponse"
+
+  /likes/{resourceId}:
+    post:
+      tags:
+        - likes
+      security:
+        - bearerAuth: []
+      summary: Like or Dislike an article or comment
+      description: Authorised users canlike or dislike an article
+      parameters:
+        - in: path
+          name: resourceId
+          schema:
+            type: integer
+          required: true
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                liked:
+                  type: boolean
+                type:
+                  type: string
+      responses:
+        '200':
+          description: successfully like an article
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponse"
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponse"
+  /report/${slug}:
+    post:
+      tags:
+        - Reports
+      security:
+        - bearerAuth: []
+      summary: Report Article
+      description: Only authorized users can report an article
+      parameters:
+        - in: path
+          name: slug
+          schema:
+            type: string
+          required: true
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                report:
+                  type: object
+                  properties:
+                    reportDetails:
+                      type: string
+                    reportType:
+                      type: string
+      responses:
+        '201':
+          description: successfully reported an article
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponse"
+        '404':
+          description: Article you are trying to report does not exist
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponse"
+        '409':
+          description: The same user cannot report an Article twice
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponse"
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponse"
+  /report/:
+    get:
+      tags:
+        - Reports
+      security:
+        - bearerAuth: []
+      summary: get all reports
+      description: user can get all reports
+      responses:
+        '200':
+          description: successfully view all reports
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponse"
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponse"
+  /report/${reportId}:
+    get:
+      tags:
+        - Reports
+      security:
+        - bearerAuth: []
+      summary: get a single report by reportId
+      description: user can get a single report
+      parameters:
+        - in: path
+          name: reportId
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: successfully view a single report on an article
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponse"
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponse"
+  /image:
+    post:
+      tags:
+        - Image
+      security:
+        - bearerAuth: []
+      summary: Image upload endpoint
+      description: Only authorized users can upload Image
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                image:
+                  type: string
+                  format: binary
+      responses:
+        '200':
+          description: successfully uploaded an image
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/successResponse"
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponse"
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponse"  
+  /profiles:
+    get:
+      tags:
+        - Profiles
+      security:
+        - bearerAuth: []
+      summary: List all Users
+      parameters:
+        - in: query
+          name: page
+          schema:
+            type: integer
+          description: The page number
+        - in: query
+          name: limit
+          schema:
+            type: integer
+          description: The number of users to return
+      description: The endpoint to get list of all users
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/successResponse"
+        '401':
+          description: Authorization error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponse"
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponse"
+  /profiles/{username}:
+    get:
+      tags:
+        - Profiles
+      summary: User's profile
+      parameters:
+        - in: path
+          name: username
+          schema:
+            type: string
+          required: true
+          description: Username of the user to get
+      description: The endpoint to get any user's profile
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/profile"
+        '401':
+          description: Authorization error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponse"
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponse"
+
+  /profiles/{username}/follow:
+    post:
+      tags:
+        - Profiles
+      security:
+        - bearerAuth: []
+      summary: Follow a user
+      parameters:
+        - in: path
+          name: username
+          schema:
+            type: string
+          required: true
+          description: Username of the user to follow
+      description: An endpoint to follow a user
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/successResponse"
+        '401':
+          description: Authorization error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponse"
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponse"
+
+    delete:
+      tags:
+        - Profiles
+      security:
+        - bearerAuth: []
+      summary: Unfollow a user
+      parameters:
+        - in: path
+          name: username
+          schema:
+            type: string
+          required: true
+          description: Username of the user to unfollow
+      description: An endpoint to unfollow a user
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/successResponse"
+        '401':
+          description: Authorization error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponse"
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponse"
+
+  /comment/{id}/highlight:
+    get:
+      tags:
+        - Comments
+      security:
+        - bearerAuth: []
+      summary: comment on an article
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+          description: Id of the post to comment on
+      description: An endpoint to make a comment on Articles
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/successResponse"
+        '401':
+          description: Authorization error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponse"
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponse"
+
+  /comment/{postId}/:
+    post:
+      tags:
+        - Comments
+      security:
+        - bearerAuth: []
+      summary: comment on an article
+      parameters:
+        - in: path
+          name: postId
+          schema:
+            type: integer
+          required: true
+          description: Id of the post to comment on
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                comment:
+                  type: string
+      description: An endpoint to make a comment on Articles
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/successResponse"
+        '401':
+          description: Authorization error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponse"
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponse"
+    get:
+      tags:
+        - Comments
+      security:
+        - bearerAuth: []
+      summary: get all comments on an article
+      parameters:
+        - in: path
+          name: postId
+          schema:
+            type: integer
+          required: true
+          description: Id of the post to get
+      description: An endpoint to get all comments on an Article
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/successResponse"
+        '401':
+          description: Authorization error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponse"
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponse"
+  /comment/{commentId}/:
+    put:
+      tags:
+        - Comments
+      security:
+        - bearerAuth: []
+      summary: edit a comment on an article
+      parameters:
+        - in: path
+          name: commentId
+          schema:
+            type: integer
+          required: true
+          description: Id of the comment to edit
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                comment:
+                  type: string
+      description: An endpoint to edit comment on an article
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/successResponse"
+        '401':
+          description: Authorization error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponse"
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponse"
+    delete:
+      tags:
+        - Comments
+      security:
+        - bearerAuth: []
+      summary: delete a comment on an article
+      parameters:
+        - in: path
+          name: commentId
+          schema:
+            type: integer
+          required: true
+          description: Id of the comment to delete
+      description: An endpoint to delete comment on an article
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/successResponse"
+        '401':
+          description: Authorization error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponse"
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponse"
+  /notifications:
+    get:
+      tags:
+        - Notifications
+      security:
+        - bearerAuth: []
+      summary: Get all notifications for a user
+      description: An endpoint for getting all notifications belonging to the signed in user
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/successResponse"
+        '401':
+          description: Authorization error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponse"
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponse"
+  /notifications/{id}/read:
+    patch:
+      tags:
+        - Notifications
+      security:
+        - bearerAuth: []
+      summary: mark a specific notification as read
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+          description: Id of the notification to mark as read
+      description: An endpoint for marking specific notifications as read
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/successResponse"
+        '401':
+          description: Authorization error
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponse"
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponse"
+  /notifications/read:
+    patch:
+      tags:
+        - Notifications
+      security:
+        - bearerAuth: []
+      summary: Mark all notifications as read
+      description: An endpoint to mark all notifications of a user as read
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/successResponse"
+        '401':
+          description: Authorization error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponse"
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponse"
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponse"
+  /notifications/email/subscribe:
+    patch:
+      tags:
+        - Notifications
+      security:
+        - bearerAuth: []
+      summary: Turn on email notification subscription
+      description: An endpoint to turn on email notifications
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/successResponse"
+        '401':
+          description: Authorization error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponse"
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponse"
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponse"
+
+    delete:
+      tags:
+        - Notifications
+      security:
+        - bearerAuth: []
+      summary: Turn off email notification subscription
+      description: An endpoint to turn off email notifications
+      parameters:
+        - in: path
+          name: articleId
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/successResponse"
+        '401':
+          description: Authorization error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponse"
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponse"
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponse"
+  /user/bookmark/:
+    get:
+      tags:
+        - Bookmarks
+      security:
+        - bearerAuth: []
+      summary: bookmark an article for reading later
+      description: An endpoint to get all bookmarked articles
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/successResponse"
+        '401':
+          description: Authorization error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponse"
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponse"
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponse"
+    delete:
+      tags:
+        - Bookmarks
+      security:
+        - bearerAuth: []
+      summary: Unbookmark all articles
+      description: A reader can unbookmark all articles
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/successResponse"
+        '401':
+          description: Authorization error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponse"
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponse"
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponse"
+  /user/bookmark/{articleId}:
+    post:
+      tags:
+        - Bookmarks
+      security:
+        - bearerAuth: []
+      summary: bookmark an article for reading later
+      parameters:
+        - in: path
+          name: articleId
+          schema:
+            type: integer
+          required: true
+      description: An endpoint to bookmark an article
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/successResponse"
+        '401':
+          description: Authorization error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponse"
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponse"
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponse"
+    delete:
+      tags:
+        - Bookmarks
+      security:
+        - bearerAuth: []
+      summary: Unbookmark an article
+      parameters:
+        - in: path
+          name: articleId
+          schema:
+            type: string
+          required: true
+      description: A reader can unbookmark an article
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/successResponse"
+        '401':
+          description: Authorization error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponse"
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponse"
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponse"
+  /admin/assignRole/:
+    put:
+      tags:
+        - Admin - Role based
+      security:
+        - bearerAuth: []
+      summary: assign roles to users
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                newRole:
+                  type: string
+                username:
+                  type: string
+      description: An endpoint that assigns role to users
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/successResponse"
+        '401':
+          description: Authorization error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponse"
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponse"
+  /admin/setActiveStatus/{username}:
+    put:
+      tags:
+        - Admin - Role based
+      security:
+        - bearerAuth: []
+      summary: set user isActive status
+      parameters:
+        - in: path
+          name: username
+          schema:
+            type: string
+          required: true
+      description: An endpoint that automatically change the active state of users
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/successResponse"
+        '401':
+          description: Authorization error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponse"
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponse"
+  /admin/deleteUser/{username}:
+    delete:
+      tags:
+        - Admin - Role based
+      security:
+        - bearerAuth: []
+      summary: deletes a user
+      parameters:
+        - in: path
+          name: username
+          schema:
+            type: string
+          required: true
+      description: An endpoint that deletes a user off the platform
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/successResponse"
+        '401':
+          description: Authorization error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponse"
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponse"
+  /admin/deleteArticle/{id}:
+    delete:
+      tags:
+        - Admin - Role based
+      security:
+        - bearerAuth: []
+      summary: deletes an article
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+      description: An endpoint that deletes an article off the platform
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/successResponse"
+        '401':
+          description: Authorization error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponse"
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponse"
+  /admin/deleteComment/{id}:
+    delete:
+      tags:
+        - Admin - Role based
+      security:
+        - bearerAuth: []
+      summary: deletes a comment
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+      description: An endpoint that deletes a comment off the platform
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/successResponse"
+        '401':
+          description: Authorization error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponse"
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponse"
+  /admin/getUser/{username}:
+    get:
+      tags:
+        - Admin - Role based
+      security:
+        - bearerAuth: []
+      summary: get a single user by username
+      description: Admin can get single user by username
+      parameters:
+        - in: path
+          name: username
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: successfully view a single user found by username
+        '401':
+          description: Unauthorized
+  /admin/user:
+    put:
+      tags:
+        - god
+      security:
+        - bearerAuth: []
+      summary: god creates a new user
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                firstname:
+                  type: string
+                lastname:
+                  type: string
+                username:
+                  username: string
+                email:
+                  username: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/successResponse"
+        '400':
+          description: validation error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponse"
+        '401':
+          description: Authorization error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponse"
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponse"
+  /admin/user/{id}:
+    get:
+      tags:
+        - god
+      security:
+        - bearerAuth: []
+      summary: god gets a user
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/successResponse"
+        '400':
+          description: validation error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponse"
+        '401':
+          description: Authorization error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponse"
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponse"
+    patch:
+      tags:
+        - god
+      security:
+        - bearerAuth: []
+      summary: god updates a user
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                firstname:
+                  type: string
+                lastname:
+                  type: string
+                username:
+                  username: string
+                email:
+                  username: string
+      responses:
+        '201':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/successResponse"
+        '400':
+          description: validation error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponse"
+        '401':
+          description: Authorization error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponse"
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponse"
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+  schemas:
+    user:
+      type: object
+      properties:
+        user:
+          type: object
+          properties:
+            id:
+              type: integer
+            token:
+              type: string
+            username:
+              type: string
+            firstname:
+              type: string
+            lastname:
+              type: string
+            email:
+              type: string
+            bio:
+              type: string
+            image:
+              type: string
+              nullable: true
+    password:
+      type: object
+      properties:
+        status:
+          type: integer
+        message:
+          type: string
+    profile:
+      type: object
+      properties:
+        firstname:
+            type: string
+        lastname:
+          type: string
+        username:
+          type: string
+        email:
+          type: string
+        bio:
+          type: string
+        image:
+          type: string
+        following:
+          type: boolean
+        followers:
+          type: object
+        followings:
+          type: object
+    article:
+      type: object
+      properties:
+        slug:
+          type: string
+        title:
+          type: string
+        description:
+          type: string
+        body:
+          type: string
+        tagList:
+          type: array
+          items:
+            type: object
+        createdAt:
+          type: string
+        updatedAt:
+          type: string
+        favorited:
+          type: boolean
+        favoritesCount:
+          type: string
+        author:
+          type: object
+        readTime:
+          type: number
+
+    image:
+      type: object
+      properties:
+        image:
+          type: string
+
+    errorResponse:
+      type: object
+      properties:
+        status:
+          type: number
+        error:
+          type: string
+    successResponse:
+      type: object
+      properties:
+        status:
+          type: integer
+        message:
+          type: string

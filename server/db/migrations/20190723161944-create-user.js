@@ -22,15 +22,9 @@ module.exports = {
       type: Sequelize.STRING,
       allowNull: false,
     },
-    bio: {
-      type: Sequelize.STRING
-    },
     username: {
       type: Sequelize.STRING,
       allowNull: false,
-    },
-    image: {
-      type: Sequelize.STRING
     },
     createdAt: {
       allowNull: false,

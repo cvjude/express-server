@@ -1,5 +1,5 @@
 {
-  "name": "ah-commando-backend",
+  "name": "express-server",
   "description": "Review apps for new PRs to the repo",
   "scripts": {},
   "env": {

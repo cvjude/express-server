@@ -10,7 +10,8 @@ const validate = (object, schema, req, res, next) => {
       return message;
     }));
   }
-  req.body[Object.keys(req.body)[0]] = value;
+
+  req.body = { ...value };
   return next();
 };
 

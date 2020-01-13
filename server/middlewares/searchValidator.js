@@ -30,6 +30,8 @@ class SearchValidator {
    */
   static validateKeyword(req, res, next) {
     const filters = req.query;
+    const { type } = req.params;
+    filters.type = type;
     return validate(filters, searchQuerySchema, req, res, next);
   }
 }

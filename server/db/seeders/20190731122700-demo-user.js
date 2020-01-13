@@ -1,10 +1,8 @@
-const faker = require('faker');
-
 module.exports = {
   up: queryInterface =>
     queryInterface.bulkInsert('Users', [
       {
-        firstname: 'john',
+        firstname: 'Admin',
         lastname: 'doe',
         username: 'j_doe23',
         email: 'john.doe@test.com',

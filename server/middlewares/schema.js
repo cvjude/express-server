@@ -80,10 +80,9 @@ export const userSchema = {
 };
 
 export const loginSchema = {
-  email: Joi.string()
+  username: Joi.string()
     .trim()
     .lowercase()
-    .email({ minDomainSegments: 2 })
     .required(),
   password: Joi.string()
     .min(8)
@@ -115,18 +114,20 @@ export const articleSchema = {
   articleBody: Joi.string()
     .trim()
     .required(),
-  categoryList: Joi.string().trim().min(2),
-  tagList: Joi.string()
-    // eslint-disable-next-line no-useless-escape
-    .regex(/^[a-zA-Z0-9\ \-]+$/)
-    .error((errors) => {
-      errors.forEach((err) => {
-        if (err.type === 'string.regex.base') {
-          err.message = 'taglist does not follow the specified format';
-        }
-      });
-      return errors;
-    }),
+  // categoryList: Joi.string().trim().min(2),
+  // tagList: Joi.string()
+  //   // eslint-disable-next-line no-useless-escape
+  //   .regex(/^[a-zA-Z0-9\ \-]+$/)
+  //   .error((errors) => {
+  //     errors.forEach((err) => {
+  //       if (err.type === 'string.regex.base') {
+  //         err.message = 'taglist does not follow the specified format';
+  //       }
+  //     });
+  //     return errors;
+  //   }),
+
+  type: Joi.string().valid('publications', 'news', 'events').required(),
 
   image: Joi.string()
     .required()
@@ -202,10 +203,11 @@ export const searchFilterSchema = {
 };
 
 export const searchQuerySchema = {
-  authorId: Joi.string().allow('').trim(),
+  // authorId: Joi.string().allow('').trim(),
   searchQuery: Joi.string().allow('').trim().min(2),
   page: Joi.number().integer().optional(),
-  limit: Joi.number().integer().optional()
+  limit: Joi.number().integer().optional(),
+  type: Joi.valid('news', 'events', 'blog', 'publications')
 };
 export const roleBodySchema = {
   newRole: Joi.string()

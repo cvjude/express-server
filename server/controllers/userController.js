@@ -30,7 +30,12 @@ class UserController {
    * @memberof UserController
    */
   static async signUp(req, res) {
-    const { firstname, lastname, email, username, password } = req.body.user;
+    const {
+      firstname, lastname, email, username, password
+    } = req.body;
+
+    console.log(req.body);
+
     const existingUser = await models.User.findOne({
       where: {
         [Op.or]: [{ email }, { username }]
@@ -40,7 +45,7 @@ class UserController {
       return errorStat(res, 409, 'User Already Exists');
     }
     const newUser = {
-      ...req.body.user,
+      ...req.body,
       password: hashPassword(password),
       verified: false
     };
@@ -66,24 +71,22 @@ class UserController {
    * @memberof UserController
    */
   static async login(req, res) {
-    const { email, password } = req.body.user;
-    const user = await models.User.findOne({ where: { email } });
+    const { username, password } = req.body;
+    const user = await models.User.findOne({ where: { username } });
 
     if (!user) return errorStat(res, 401, 'Incorrect Login information');
     const matchPasswords = comparePassword(password, user.password);
-    if (!matchPasswords)
-      return errorStat(res, 401, 'Incorrect Login information');
+    if (!matchPasswords) { return errorStat(res, 401, 'Incorrect Login information'); }
     return successStat(res, 200, 'user', {
       id: user.id,
       token: await generateToken({
         id: user.id,
         username: user.username,
-        email
       }),
       firstname: user.firstname,
       lastname: user.firstname,
       username: user.username,
-      email
+      email: user.email
     });
   }
 
@@ -97,8 +100,7 @@ class UserController {
    */
   static async logout(req, res) {
     const authorizationHeader = req.headers.authorization;
-    const token =
-      req.headers.authorization.split(' ')[1] || authorizationHeader;
+    const token = req.headers.authorization.split(' ')[1] || authorizationHeader;
     await addToBlacklist(token);
     return successStat(res, 204, 'message', 'No Content');
   }

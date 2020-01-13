@@ -36,7 +36,7 @@ class InputValidator {
    * @returns {function} validate() - An execucted validate function
    */
   static validateUser(req, res, next) {
-    const user = { ...req.body.user };
+    const user = { ...req.body };
     return validate(user, userSchema, req, res, next);
   }
 
@@ -49,7 +49,7 @@ class InputValidator {
    * @returns {function} validate() - An execucted validate function
    */
   static validateLogin(req, res, next) {
-    const login = { ...req.body.user };
+    const login = { ...req.body };
     return validate(login, loginSchema, req, res, next);
   }
 
@@ -75,7 +75,7 @@ class InputValidator {
   * @returns {function} validate() - An execucted validate function
   */
   static validateArticle(req, res, next) {
-    const article = { ...req.body.article };
+    const article = { ...req.body };
     return validate(article, articleSchema, req, res, next);
   }
 

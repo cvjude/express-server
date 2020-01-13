@@ -1,16 +1,17 @@
 import uuid from 'uuid';
-import sequelize from 'sequelize';
+import sequelize, { Op } from 'sequelize';
 import dotenv from 'dotenv';
 import models from '../db/models';
 import helpers from '../helpers';
-import Paginate from '../helpers/paginate';
-import Notification from '../helpers/notifications';
+// import Paginate from '../helpers/paginate';
 
 dotenv.config();
 
-const { querySearch, filterSearch, errorStat, successStat } = helpers;
+const {
+  querySearch, filterSearch, errorStat, successStat
+} = helpers;
 
-const { paginate } = Paginate;
+// const { paginate } = Paginate;
 const { Tags, Categories } = models;
 /**
  * @Module ArticleController
@@ -25,7 +26,10 @@ class ArticleController {
    * @memberof ArticleController
    */
   static async createArticle(req, res) {
-    const { title, description, articleBody, image, type } = req.body.article;
+    const {
+      title, description, articleBody, image, type
+    } = req.body;
+
     const readTime = Math.floor(articleBody.split(' ').length / 200);
     const article = await models.Article.create({
       type,
@@ -48,22 +52,20 @@ class ArticleController {
    * @memberof ArticleController
    */
   static async getAllArticles(req, res) {
-    const { searchQuery } = req.query;
-    const queryFilters = req.body;
+    const {
+      searchQuery, type, filters, limit, page
+    } = req.body;
+    const queryFilters = filters || {};
 
     let articles;
-    const { page, limit } = req.query;
-    if (!page && !limit) {
-      if (!searchQuery) {
-        articles = await models.Article.findAll({});
-      } else if (searchQuery && Object.keys(queryFilters)[0] !== 'undefined') {
-        articles = await filterSearch(searchQuery, queryFilters);
-      } else {
-        articles = await querySearch(searchQuery);
-      }
-      return successStat(res, 200, 'articles', articles);
+    if (!searchQuery) {
+      articles = await models.Article.findAll({ limit, offset: page, where: { type } });
+    } else if (searchQuery && Object.keys(queryFilters)[0] === 'undefined') {
+      articles = await filterSearch(type, searchQuery, queryFilters, limit, page);
+    } else {
+      articles = await querySearch(type, searchQuery, limit, page);
     }
-    paginate(page, limit, models.Article, 'articles', res, req, []);
+    return successStat(res, 200, 'articles', articles);
   }
 
   /**
@@ -74,11 +76,11 @@ class ArticleController {
    * @memberof ArticleController
    */
   static async getOneArticle(req, res) {
-    const { slug } = req.params;
+    const { slug, type } = req.params;
 
     const article = await models.Article.findOne({
       where: {
-        slug
+        [Op.and]: { type, slug }
       }
     });
 
@@ -97,19 +99,22 @@ class ArticleController {
    * @memberof ArticleController
    */
   static async editArticle(req, res) {
-    const { title, description, articleBody, image } = req.body.article;
+    const {
+      title, description, articleBody, image, type
+    } = req.body;
+    const { slug } = req.params;
     const editedArticle = await models.Article.update(
       {
         title,
+        type,
         description,
         articleBody,
-        tagList,
         image
       },
       {
         returning: true,
         where: {
-          slug: req.params.slug
+          [Op.and]: { type, slug }
         }
       }
     );
@@ -130,10 +135,12 @@ class ArticleController {
    * @memberof ArticleController
    */
   static async deleteArticle(req, res) {
+    const { type, slug } = req.params;
+    console.log(type, slug);
     const deletedArticle = await models.Article.destroy({
       returning: true,
       where: {
-        slug: req.params.slug
+        [Op.and]: { type, slug }
       }
     });
 

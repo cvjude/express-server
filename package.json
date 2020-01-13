@@ -5,12 +5,12 @@
   "main": "index.js",
   "scripts": {
     "start": "node build/index.js",
-    "dev": "export DEBUG=dev NODE_ENV=development && nodemon --exec babel-node server/index.js",
-    "debug": "export DEBUG=dev && nodemon --exec babel-node server/index.js --inspect",
+    "dev": "cross-env-shell set DEBUG='dev' NODE_ENV=development && nodemon --exec babel-node server/index.js",
+    "debug": "cross-env DEBUG=dev && nodemon --exec babel-node server/index.js --inspect",
     "clean": "rm -rf build && mkdir build && npm run copy-docs",
     "build": "npm run clean && npm run migrate && babel -d ./build ./server",
-    "pretest": "export NODE_ENV=test && npm run migrate:undo && npm run migrate && npm run seed",
-    "test": "export NODE_ENV=test && nyc mocha --timeout 10000 --require @babel/register server/tests --exit",
+    "pretest": "cross-env NODE_ENV=test && npm run migrate:undo && npm run migrate && npm run seed",
+    "test": "cross-env NODE_ENV=test && nyc mocha --timeout 10000 --require @babel/register server/tests --exit",
     "seed": "npm run seed:all",
     "seed:all": "node_modules/.bin/sequelize db:seed:all",
     "seed:undo": "node_modules/.bin/sequelize db:seed:undo:all",
@@ -21,25 +21,19 @@
     "migrate:undo": "node_modules/.bin/sequelize db:migrate:undo:all",
     "coveralls": "nyc report --reporter=text-lcov | coveralls",
     "copy-docs": "cp -r server/docs/ build/docs/",
-    "testmail": "export DEBUG=dev && nodemon --exec babel-node server/helpers/mail/mail"
-  },
-  "nyc": {
-    "exclude": [
-      "server/helpers/passport.js"
-    ]
+    "testmail": "cross-env DEBUG=dev && nodemon --exec babel-node server/helpers/mail/mail"
   },
   "author": "Jude Violet",
   "license": "MIT",
   "dependencies": {
     "@hapi/joi": "^15.1.0",
-    "@sendgrid/mail": "^6.4.0",
     "bcryptjs": "^2.4.3",
     "body-parser": "^1.18.3",
     "chalk": "^2.4.2",
     "cloudinary": "^1.14.0",
     "cors": "^2.8.4",
+    "cross-env": "^6.0.3",
     "cryptr": "^4.0.2",
-    "datauri": "^2.0.0",
     "debug": "^4.1.1",
     "dotenv": "^6.0.0",
     "errorhandler": "^1.5.0",
@@ -52,13 +46,8 @@
     "morgan": "^1.9.1",
     "node-cron": "^2.0.3",
     "os": "^0.1.1",
-    "passport": "^0.4.0",
-    "passport-custom": "^1.0.5",
-    "passport-facebook": "^3.0.0",
-    "passport-google-oauth2": "^0.2.0",
     "pg": "^7.11.0",
     "pg-hstore": "^2.3.3",
-    "pusher": "^2.2.2",
     "sequelize": "^5.15.1",
     "sequelize-cli": "^5.5.0",
     "sequelize-slugify": "^0.7.0",
@@ -89,11 +78,6 @@
     "nodemon": "^1.19.1",
     "nyc": "^14.1.1",
     "sinon": "^7.3.2"
-  },
-  "husky": {
-    "hooks": {
-      "pre-commit": "lint-staged"
-    }
   },
   "lint-staged": {
     "*.js": [

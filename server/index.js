@@ -7,11 +7,11 @@ import errorhandler from 'errorhandler';
 import morgan from 'morgan';
 import debug from 'debug';
 import chalk from 'chalk';
-import passport from 'passport';
 import { config } from 'dotenv';
-import routes from './routes';
 import os from 'os';
 import formData from 'express-form-data';
+import routes from './routes';
+import util from './helpers/Utilities';
 
 config();
 
@@ -36,26 +36,20 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use(passport.initialize());
-app.use(passport.session());
 /* istanbul ignore next */
 if (!isProduction) app.use(errorhandler());
 
-app.get('/', (req, res) => res.status(301).redirect('/api/v1'));
+app.get('/', (req, res) => res.status(301).redirect('/api/v2'));
 
 app.use('/api/v1', routes);
 
-app.use('*', (req, res) =>
-  res.status(404).json({
-    status: res.statusCode,
-    error: 'Endpoint Not Found'
-  })
-);
+app.use('*', (req, res) => util.errorStat(res, 404, 'Endpoint not found'));
+
 const setHeaders = () => (req, res, next) => {
   res.setHeader('Access-Control-Allow-Credentials', true);
   res.setHeader(
     'Access-Control-Allow-Origin',
-    req.headers.origin || 'http://localhost:5000'
+    req.headers.origin || 'http://localhost:5001'
   );
   res.setHeader('Access-Control-Allow-Methods', '*');
   res.setHeader(

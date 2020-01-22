@@ -16,7 +16,7 @@ class Auth {
     * @memberof Auth
     */
   static generateToken(payload) {
-    const token = jwt.sign(payload, secret, { expiresIn: 86400 });
+    const token = jwt.sign(payload, secret, { expiresIn: '1d' });
     return token;
   }
 

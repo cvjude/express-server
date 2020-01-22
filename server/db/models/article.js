@@ -4,8 +4,8 @@ import SequelizeSlugify from 'sequelize-slugify';
 module.exports = (sequelize, DataTypes) => {
   const Article = sequelize.define('Article', {
     title: DataTypes.STRING,
-    articleBody: DataTypes.STRING,
-    description: DataTypes.STRING,
+    articleBody: DataTypes.TEXT,
+    description: DataTypes.TEXT,
     type: DataTypes.STRING,
     uuid: DataTypes.STRING,
     slug: {
@@ -13,7 +13,7 @@ module.exports = (sequelize, DataTypes) => {
       unique: true
     },
     readTime: DataTypes.INTEGER,
-    image: DataTypes.STRING
+    image: DataTypes.TEXT
   });
 
   SequelizeSlugify.slugifyModel(Article, {
@@ -21,6 +21,6 @@ module.exports = (sequelize, DataTypes) => {
     suffixSource: ['uuid'],
     slugOptions: { lower: true }
   });
-  Article.associate = models => {};
+  Article.associate = (models) => { };
   return Article;
 };

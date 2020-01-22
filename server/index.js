@@ -18,7 +18,7 @@ config();
 const isProduction = process.env.NODE_ENV === 'production';
 const app = express();
 const log = debug('dev');
-const port = process.env.PORT || 5001;
+const port = process.env.PORT || 4000;
 
 const options = {
   uploadDir: os.tmpdir(),
@@ -49,7 +49,7 @@ const setHeaders = () => (req, res, next) => {
   res.setHeader('Access-Control-Allow-Credentials', true);
   res.setHeader(
     'Access-Control-Allow-Origin',
-    req.headers.origin || 'http://localhost:5001'
+    req.headers.origin || 'http://localhost:4000'
   );
   res.setHeader('Access-Control-Allow-Methods', '*');
   res.setHeader(

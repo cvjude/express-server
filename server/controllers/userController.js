@@ -76,12 +76,14 @@ class UserController {
 
     if (!user) return errorStat(res, 401, 'Incorrect Login information');
     const matchPasswords = comparePassword(password, user.password);
-    if (!matchPasswords) { return errorStat(res, 401, 'Incorrect Login information'); }
+    if (!matchPasswords) {
+      return errorStat(res, 401, 'Incorrect Login information');
+    }
     return successStat(res, 200, 'user', {
       id: user.id,
       token: await generateToken({
         id: user.id,
-        username: user.username,
+        username: user.username
       }),
       firstname: user.firstname,
       lastname: user.firstname,

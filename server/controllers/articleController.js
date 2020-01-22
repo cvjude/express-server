@@ -41,7 +41,7 @@ class ArticleController {
       readTime
     });
 
-    return successStat(res, 201, 'articles', article);
+    return successStat(res, 201, 'article', article);
   }
 
   /**
@@ -59,7 +59,14 @@ class ArticleController {
 
     let articles;
     if (!searchQuery) {
-      articles = await models.Article.findAll({ limit, offset: page, where: { type } });
+      articles = await models.Article.findAll({
+        limit,
+        offset: page,
+        where: { type },
+        order: [
+          ['createdAt', 'DESC'],
+        ],
+      });
     } else if (searchQuery && Object.keys(queryFilters)[0] === 'undefined') {
       articles = await filterSearch(type, searchQuery, queryFilters, limit, page);
     } else {
@@ -136,7 +143,6 @@ class ArticleController {
    */
   static async deleteArticle(req, res) {
     const { type, slug } = req.params;
-    console.log(type, slug);
     const deletedArticle = await models.Article.destroy({
       returning: true,
       where: {

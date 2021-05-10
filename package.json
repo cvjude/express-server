@@ -42,7 +42,7 @@
     "express-form-data": "^2.0.10",
     "faker": "^4.1.0",
     "jsonwebtoken": "^8.3.0",
-    "lodash": "^4.17.15",
+    "lodash": "^4.17.21",
     "morgan": "^1.9.1",
     "node-cron": "^2.0.3",
     "os": "^0.1.1",
